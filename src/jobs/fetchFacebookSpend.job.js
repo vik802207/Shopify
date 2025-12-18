@@ -1,0 +1,77 @@
+const FacebookSpend = require("../models/FacebookSpend");
+const { fetchFacebookSpend } = require("../services/facebook.service");
+
+const ACCOUNTS = [
+  { adAccountId: "414261671330052", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "746316834737537", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "1563769617775044", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "1465021304361078", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "352192974604671", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "1487775638903195", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "477738921551148", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "2034143927110319", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "1491853345014194", token: "EAAsZAxhUKHEwBP8mTKjLvroyODh2ozT3tassPeGqnyU4ZB4d1eiJwEU6pWxRE0euLFZBiGslZA4zwz5YSk9mpYyxPEJdX3mHyMArwoIf5ljjFIWZAQ2voTGMuZAf5mXEFlXuuMUD6rf6Pr25N1fZASfg1x3alvyqOk5ZBTipoxUAMH6KD6ZA9SpX3jYQ6AnyBdqyC" },
+  { adAccountId: "2103097980166685", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "1229382701732036", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "1679103402773971", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "1386193529259281", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "1326084679088292", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "512495595200445", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  { adAccountId: "3813309132314642", token: "EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC" },
+  {adAccountId:"1633881027961041",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+  {adAccountId:"849395014617779",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+  {adAccountId:"1764100764502071",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+  {adAccountId:"838816955134819",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+  {adAccountId:"4109179969411777",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+  {adAccountId:"1912892672941189",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+  {adAccountId:"868262652198084",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+  {adAccountId:"1930580844456334",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+  {adAccountId:"2463452317390126",token:"EAAJqM51LlWUBQMUM3EmzCZBHpOsGeeap0kQ6qMD4YZCbhDk69ZCpFsAbq2pNEghGFNfx13oyfgJ2SLbF3vb82NbKgbAm3sS4pckozRhI86d7zxtF85FWQ9e7HruBkV7XLBY8Ggd86zfRv4OgJQIiel4aTxRxxf2wQCQ4Q8mvo0xDtDZBw6ZABad4qG1IC"},
+
+];
+
+
+function formatDate(d) {
+  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+async function runFacebookSpendSync() {
+  console.log("🟦 Facebook Spend Sync STARTED");
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const dates = [today, yesterday];
+
+  for (const acc of ACCOUNTS) {
+    for (const d of dates) {
+      const dateStr = formatDate(d);
+
+      const spend = await fetchFacebookSpend({
+        adAccountId: acc.adAccountId,
+        token: acc.token,
+        dateStr
+      });
+
+      await FacebookSpend.updateOne(
+        {
+          adAccountId: acc.adAccountId,
+          spendDate: new Date(dateStr)
+        },
+        {
+          $set: {
+            spend
+          }
+        },
+        { upsert: true }
+      );
+
+      console.log(
+        `✅ ${acc.adAccountId} | ${dateStr} | ₹${spend}`
+      );
+    }
+  }
+}
+
+module.exports = runFacebookSpendSync;
