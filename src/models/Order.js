@@ -22,4 +22,4 @@ const OrderSchema = new mongoose.Schema({
   sourceName: String,
 }, { timestamps: true });
 
-module.exports = mongoose.model("Shopiuy", OrderSchema);
+module.exports = mongoose.model("Shopifydata", OrderSchema);
