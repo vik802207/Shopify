@@ -16,11 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch(err => console.error(err));
 
-<<<<<<< HEAD
-cron.schedule("*/55 * * * *", async () => {
-=======
-cron.schedule("*/1 * * * *", async () => {
->>>>>>> 9f57d54999904a2448c21557831389145c081cee
+cron.schedule("*/5 * * * *", async () => {
   console.log("⏱ Shopify sync started");
   try {
     await runShopifySync();
