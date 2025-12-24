@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cron = require("node-cron");
 const runShopifySync = require("./jobs/fetchOrders.job");
 const runFacebookSpendSync = require("./jobs/fetchFacebookSpend.job");
+const runGoogleAdsSpendSync = require("./jobs/fetchGoogleAdsSpend.job");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -15,11 +16,12 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch(err => console.error(err));
 
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/55 * * * *", async () => {
   console.log("⏱ Shopify sync started");
   try {
     await runShopifySync();
     await runFacebookSpendSync();
+    await runGoogleAdsSpendSync();
     console.log("✅ Shopify sync finished");
   } catch (err) {
     console.error("❌ Shopify sync error", err);
@@ -33,6 +35,10 @@ app.use("/api/dashboard", require("./routes/dashboard.routes"));
 app.use("/api/reports", require("./routes/report.routes"));
 // http://localhost:8000/api/reports/ads-summary
 app.use("/api/reports", require("./routes/adsReport.routes"));
+app.use("/api/reports", require("./routes/combinedReport.routes"));
+app.use("/api/reports", require("./routes/yesterdaycount"))
+app.use("/api/reports", require("./routes/yesterdaytotalcount"))
+
 
 
 app.listen(8000, () => {

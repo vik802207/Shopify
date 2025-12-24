@@ -3,6 +3,27 @@ const { fetchOrders } = require("../services/shopify.service");
 
 const STORES = [
   {
+    domain:"t12rzj-m9.myshopify.com",
+    token:"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"
+  },
+  {
+    domain:"navyatasolutions.myshopify.com",
+    token:"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"
+  },
+  {
+    domain:"xfauc1-x1.myshopify.com",
+    token:"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"
+  },
+  {
+    domain:"thebibastore.myshopify.com",
+    token:"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"
+  }
+  ,
+  {
+    domain:"eirfu0-jc.myshopify.com",
+    token:"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"
+  },
+  {
     domain: "a67d5c-0a.myshopify.com",
     token: "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"
   },
@@ -40,7 +61,9 @@ const STORES = [
   },{
     domain:"ff7gju-1m.myshopify.com",
     token:"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"
-  },{
+  },
+  
+  {
     domain:"9tnkwm-pk.myshopify.com",
     token:"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"
   },{

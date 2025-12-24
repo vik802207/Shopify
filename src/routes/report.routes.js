@@ -31,13 +31,18 @@ router.get("/store-summary", async (req, res) => {
     match.OrderDate = { $gte: from, $lte: to };
   }
 
-  if (filterType === "custom" && startDate && endDate) {
-    const from = new Date(startDate);
-    const to = new Date(endDate);
-    to.setHours(23, 59, 59, 999);
+if (filterType === "custom" && startDate && endDate) {
+  const from = new Date(startDate);
+  from.setHours(0, 0, 0, 0);
 
-    match.OrderDate = { $gte: from, $lte: to };
-  }
+  const to = new Date(endDate);
+  to.setDate(to.getDate() + 1);
+  to.setHours(0, 0, 0, 0);
+
+  match.OrderDate = { $gte: from, $lt: to };
+}
+
+
 
   // 🔹 AGGREGATION
   const data = await Order.aggregate([
