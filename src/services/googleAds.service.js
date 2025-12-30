@@ -12,31 +12,49 @@ async function fetchGoogleAdsSpend({
   startDate,
   endDate
 }) {
- const customer = client.Customer({
-  customer_id: customerId.replace(/-/g, ""),   // CLIENT account
-  login_customer_id: "6976590323",              // MCC account
-  refresh_token: refreshToken
-});
+  try {
+    const customer = client.Customer({
+      customer_id: customerId.replace(/-/g, ""), // CLIENT
+      login_customer_id: "6976590323",            // MCC
+      refresh_token: refreshToken
+    });
 
+    const query = `
+      SELECT
+        segments.date,
+        metrics.cost_micros
+      FROM customer
+      WHERE segments.date BETWEEN '${startDate}' AND '${endDate}'
+    `;
 
-  const query = `
-    SELECT
-      segments.date,
-      metrics.cost_micros
-    FROM customer
-    WHERE segments.date BETWEEN '${startDate}' AND '${endDate}'
-  `;
+    const rows = await customer.query(query);
 
-  const rows = await customer.query(query);
+    return rows.map(r => ({
+      customerId,
+      spendDate: new Date(r.segments.date),
+      spend: Number(r.metrics.cost_micros) / 1e6
+    }));
 
-  return rows.map(r => ({
-    customerId,
-    spendDate: new Date(r.segments.date),
-    spend: Number(r.metrics.cost_micros) / 1e6
-  }));
+  } catch (error) {
+    const errorCode = error?.response?.status || error?.code;
+
+    // ✅ 403 / permission errors → SKIP & CONTINUE
+    if (errorCode === 403 || errorCode === 401) {
+      console.warn(`⚠️ Google Ads access denied for customer ${customerId}. Skipping.`);
+      return []; // ⬅️ VERY IMPORTANT
+    }
+
+    // ❌ Any other error → still log but don't crash server
+    console.error("❌ Google Ads API Error:", {
+      customerId,
+      message: error.message,
+      code: errorCode
+    });
+
+    return [];
+  }
 }
 
-// ✅ VERY IMPORTANT
 module.exports = {
   fetchGoogleAdsSpend
 };
